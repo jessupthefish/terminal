@@ -1,13 +1,14 @@
 import { writable } from 'svelte/store';
 
 export const crtStyles = [
-  'classic',
-  'fine',
-  'aperture',
-  'soft',
   'phosphor',
   'sony',
   'tv',
+  'mask',
+  'checker',
+  'rgb',
+  'scanlines',
+  'grid',
 ] as const;
 
 export const crt = writable<boolean>(
@@ -18,10 +19,10 @@ crt.subscribe((value) => {
   localStorage.setItem('crt', JSON.stringify(value));
 });
 
-const storedStyle = localStorage.getItem('crt-style') || 'classic';
+const storedStyle = localStorage.getItem('crt-style') || 'phosphor';
 
 export const crtStyle = writable<string>(
-  (crtStyles as readonly string[]).includes(storedStyle) ? storedStyle : 'classic',
+  (crtStyles as readonly string[]).includes(storedStyle) ? storedStyle : 'phosphor',
 );
 
 crtStyle.subscribe((value) => {

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { afterUpdate, onMount } from 'svelte';
+  import { crt, crtStyle, crtStyles } from '../stores/crt';
   import { cwd } from '../stores/cwd';
   import { history } from '../stores/history';
   import { machine } from '../stores/machine';
@@ -150,6 +151,19 @@
 
       command = '';
       historyIndex = -1;
+    } else if (
+      event.ctrlKey &&
+      (event.key === 'ArrowRight' || event.key === 'ArrowLeft')
+    ) {
+      // quick CRT style flipper
+      event.preventDefault();
+
+      const direction = event.key === 'ArrowRight' ? 1 : -1;
+      const index = crtStyles.indexOf($crtStyle as (typeof crtStyles)[number]);
+
+      $crtStyle =
+        crtStyles[(index + direction + crtStyles.length) % crtStyles.length];
+      $crt = true;
     }
   };
 </script>
