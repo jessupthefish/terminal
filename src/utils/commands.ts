@@ -9,6 +9,12 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
   help: () => 'Available commands: ' + Object.keys(commands).join(', '),
   hostname: () => hostname,
   whoami: () => 'guest',
+  about: () =>
+    "Hi, I'm Steven Jessup — a developer and veteran who's passionate about clean code and creative tech. This site is my interactive resume. Type 'help' to explore.",
+  resume: () =>
+    'View my resume here: <a href="https://jessupthefish.github.io/resume" target="_blank">resume.pdf</a>',
+  projects: () =>
+    'View my projects at: <a href="https://github.com/jessupthefish?tab=repositories" target="_blank">github.com/jessupthefish</a>',
   date: () => new Date().toLocaleString(),
   vi: () => `why use vi? try 'emacs'`,
   vim: () => `why use vim? try 'emacs'`,
@@ -78,16 +84,11 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
 
     return `Opening mailto:${packageJson.author.email}...`;
   },
-  donate: () => {
-    window.open(packageJson.funding.url, '_blank');
-
-    return 'Opening donation url...';
-  },
   weather: async (args: string[]) => {
     const city = args.join('+');
 
     if (!city) {
-      return 'Usage: weather [city]. Example: weather Brussels';
+      return 'Usage: weather [city]. Example: weather Manteca';
     }
 
     const weather = await fetch(`https://wttr.in/${city}?ATm`);
@@ -114,12 +115,12 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
     }
   },
   banner: () => `
-███╗   ███╗██╗  ██╗████████╗████████╗███████╗██████╗
-████╗ ████║██║  ██║╚══██╔══╝╚══██╔══╝╚════██║╚════██╗
-██╔████╔██║███████║   ██║      ██║       ██╔╝ █████╔╝
-██║╚██╔╝██║╚════██║   ██║      ██║      ██╔╝ ██╔═══╝
-██║ ╚═╝ ██║     ██║   ██║      ██║      ██║  ███████╗
-╚═╝     ╚═╝     ╚═╝   ╚═╝      ╚═╝      ╚═╝  ╚══════╝ v${packageJson.version}
+███████╗████████╗███████╗██╗   ██╗███████╗███╗   ██╗     ██╗███████╗███████╗███████╗██╗   ██╗██████╗  ██████╗ ███████╗██╗   ██╗
+██╔════╝╚══██╔══╝██╔════╝██║   ██║██╔════╝████╗  ██║     ██║██╔════╝██╔════╝██╔════╝██║   ██║██╔══██╗ ██╔══██╗██╔════╝██║   ██║
+███████╗   ██║   █████╗  ██║   ██║█████╗  ██╔██╗ ██║     ██║█████╗  ███████╗███████╗██║   ██║██████╔╝ ██║  ██║█████╗  ██║   ██║
+╚════██║   ██║   ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╗██║██   ██║██╔══╝  ╚════██║╚════██║██║   ██║██╔═══╝  ██║  ██║██╔══╝  ╚██╗ ██╔╝
+███████║   ██║   ███████╗ ╚████╔╝ ███████╗██║ ╚████║╚█████╔╝███████╗███████║███████║╚██████╔╝██║   ██╗██████╔╝███████╗ ╚████╔╝
+╚══════╝   ╚═╝   ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝ ╚════╝ ╚══════╝╚══════╝╚══════╝ ╚═════╝ ╚═╝   ╚═╝╚═════╝ ╚══════╝  ╚═══╝ v${packageJson.version}
 
 Type 'help' to see list of available commands.
 `,
