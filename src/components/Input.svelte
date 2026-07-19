@@ -6,6 +6,7 @@
   import { theme } from '../stores/theme';
   import { commands } from '../utils/commands';
   import { completePath, displayPath } from '../utils/filesystem';
+  import { escapeHtml } from '../utils/html';
   import { track } from '../utils/tracking';
 
   let command = '';
@@ -74,12 +75,13 @@
           $history = [...$history, { command, outputs: [output], path }];
         }
       } else {
-        const output = `${commandName}: command not found`;
+        const output = `${escapeHtml(commandName)}: command not found`;
 
         $history = [...$history, { command, outputs: [output], path }];
       }
 
       command = '';
+      historyIndex = -1;
     } else if (event.key === 'ArrowUp') {
       if (historyIndex < $history.length - 1) {
         historyIndex++;
@@ -121,6 +123,16 @@
       event.preventDefault();
 
       $history = [];
+    } else if (event.ctrlKey && event.key === 'c') {
+      event.preventDefault();
+
+      $history = [
+        ...$history,
+        { command: `${command}^C`, outputs: [], path: displayPath($cwd) },
+      ];
+
+      command = '';
+      historyIndex = -1;
     }
   };
 </script>
@@ -138,11 +150,19 @@
     id="command-input"
     name="command-input"
     aria-label="Command input"
-    class="w-full px-2 bg-transparent outline-none"
+    class="ml-2 bg-transparent outline-none"
     type="text"
-    style={`color: ${$theme.foreground}`}
+    autocomplete="off"
+    autocapitalize="off"
+    spellcheck="false"
+    style={`color: ${$theme.foreground}; caret-color: transparent; width: ${command.length}ch; min-width: 1px;`}
     bind:value={command}
     on:keydown={handleKeyDown}
     bind:this={input}
   />
+
+  <span
+    class="terminal-cursor select-none"
+    aria-hidden="true"
+    style={`color: ${$theme.foreground}`}>█</span>
 </div>

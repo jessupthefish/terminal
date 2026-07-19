@@ -1,4 +1,5 @@
 import { projectsDir } from './filesystem';
+import { escapeHtml } from './html';
 
 export interface Repo {
   name: string;
@@ -12,13 +13,6 @@ export interface Repo {
 const USERNAME = 'jessupthefish';
 const CACHE_KEY = 'github-repos';
 const CACHE_TTL = 60 * 60 * 1000;
-
-export function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
 
 function readCache(): { at: number; repos: Repo[] } | null {
   try {
