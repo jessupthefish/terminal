@@ -15,8 +15,6 @@ import { overlay } from '../stores/overlay';
 const hostname = window.location.hostname;
 const loadedAt = Date.now();
 
-const hiddenCommands = ['snake', 'matrix', 'sudo', 'dir', 'cls', 'catalog', 'list'];
-
 interface HelpEntry {
   usage: string;
   description: string;
@@ -59,6 +57,7 @@ const helpSections: Array<{ title: string; entries: HelpEntry[] }> = [
       { usage: 'weather <city>', description: 'current weather' },
       { usage: 'cowsay [text]', description: 'a cow says things' },
       { usage: 'fortune', description: 'words of wisdom' },
+      { usage: 'dir, cls, catalog, list', description: 'era commands (DOS / Apple II / C64)' },
       { usage: 'echo, date, whoami, ...', description: 'the usual suspects' },
     ],
   },
@@ -331,9 +330,17 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
     switch (args[0]) {
       case 'ls': {
         const width = Math.max(...Object.keys(machines).map((k) => k.length));
+        const labelWidth = Math.max(
+          ...Object.values(machines).map((m) => m.label.length),
+        );
 
         return Object.values(machines)
-          .map((m) => `  ${m.key.padEnd(width + 3)}${m.label}`)
+          .map(
+            (m) =>
+              `  ${m.key.padEnd(width + 3)}${m.label.padEnd(labelWidth + 3)}${
+                m.aliases ? `native: ${m.aliases}` : ''
+              }`,
+          )
           .join('\n');
       }
 
