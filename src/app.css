@@ -7,6 +7,30 @@
   src: url('/fonts/CascadiaCode.ttf')
 }
 
+@font-face {
+  font-family: 'Pet Me 64';
+  src: url('/fonts/PetMe64.ttf');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Print Char 21';
+  src: url('/fonts/PrintChar21.ttf');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Web437 IBM VGA';
+  src: url('/fonts/Web437_IBM_VGA_8x16.woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Glass TTY VT220';
+  src: url('/fonts/Glass_TTY_VT220.ttf');
+  font-display: swap;
+}
+
 * {
   font-family: 'Cascadia Code', monospace;
 }
@@ -46,18 +70,73 @@
   border-radius: 0;
 }
 
+.machine-c64,
+.machine-c64 *,
+.machine-apple2,
+.machine-apple2 *,
+.machine-msdos,
+.machine-msdos * {
+  /* bitmap fonts must stay pixel-sharp */
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+}
+
+.machine-c64,
+.machine-c64 * {
+  font-family: 'Pet Me 64', monospace;
+}
+
 .machine-c64 {
-  border-width: 20px;
+  border-width: 28px;
+  font-size: 24px !important;
+  line-height: 1;
   text-transform: uppercase;
+}
+
+.machine-apple2,
+.machine-apple2 * {
+  font-family: 'Print Char 21', monospace;
 }
 
 .machine-apple2 {
+  border-width: 0;
+  font-size: 24px !important;
+  line-height: 1.1;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+}
+
+.machine-msdos,
+.machine-msdos * {
+  font-family: 'Web437 IBM VGA', monospace;
+}
+
+.machine-msdos {
+  border-width: 0;
+  font-size: 16px !important;
+  line-height: 1;
+}
+
+.machine-amber,
+.machine-amber * {
+  font-family: 'Glass TTY VT220', monospace;
 }
 
 .machine-amber {
-  letter-spacing: 0.04em;
+  border-width: 0;
+  font-size: 20px !important;
+  line-height: 1.2;
+}
+
+.machine-amber.crt {
+  text-shadow: 0 0 6px;
+}
+
+.machine-c64 .font-bold,
+.machine-apple2 .font-bold,
+.machine-msdos .font-bold,
+.machine-amber .font-bold {
+  /* faux-bold smears bitmap fonts */
+  font-weight: 400;
 }
 
 @keyframes cursor-blink {
