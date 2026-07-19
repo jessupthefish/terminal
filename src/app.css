@@ -32,3 +32,73 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+/* CRT effects — toggled with the `crt` command */
+
+.crt {
+  text-shadow: 0 0 4px;
+  animation: crt-flicker 4s infinite;
+}
+
+.crt-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  /* scanlines */
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.18) 3px,
+    transparent 4px
+  );
+}
+
+.crt-overlay::before {
+  /* vignette */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 60%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
+}
+
+.crt-overlay::after {
+  /* slow-moving refresh band */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 8rem;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.03),
+    transparent
+  );
+  animation: crt-sweep 8s linear infinite;
+}
+
+@keyframes crt-flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.96; }
+  94% { opacity: 1; }
+  97% { opacity: 0.98; }
+}
+
+@keyframes crt-sweep {
+  from { top: -8rem; }
+  to { top: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crt,
+  .crt-overlay::after {
+    animation: none;
+  }
+}

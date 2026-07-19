@@ -1,8 +1,11 @@
 <script lang="ts">
   import { afterUpdate, onMount } from 'svelte';
+  import { cwd } from '../stores/cwd';
   import { history } from '../stores/history';
+  import { overlay } from '../stores/overlay';
   import { theme } from '../stores/theme';
   import { commands } from '../utils/commands';
+  import { completePath, displayPath } from '../utils/filesystem';
   import { track } from '../utils/tracking';
 
   let command = '';
@@ -10,17 +13,38 @@
 
   let input: HTMLInputElement;
 
+  const bootLines = [
+    'Booting system... OK',
+    'Loading modules... OK',
+    'Establishing secure connection... OK',
+    `Welcome to ${window.location.hostname || 'stevenjessup.com'}`,
+  ];
+
   onMount(() => {
     input.focus();
 
     if ($history.length === 0) {
-      const command = commands['banner'] as () => string;
+      const banner = (commands['banner'] as () => string)();
+      const bootIndex = $history.length;
 
-      if (command) {
-        const output = command();
+      $history = [...$history, { command: '', outputs: [] }];
 
-        $history = [...$history, { command: 'banner', outputs: [output] }];
-      }
+      bootLines.forEach((line, i) => {
+        setTimeout(() => {
+          const entries = [...$history];
+
+          entries[bootIndex] = {
+            command: '',
+            outputs: [...entries[bootIndex].outputs, line],
+          };
+
+          $history = entries;
+        }, 250 * (i + 1));
+      });
+
+      setTimeout(() => {
+        $history = [...$history, { command: 'banner', outputs: [banner] }];
+      }, 250 * (bootLines.length + 1));
     }
   });
 
@@ -29,8 +53,13 @@
   });
 
   const handleKeyDown = async (event: KeyboardEvent) => {
+    if ($overlay !== 'none') {
+      return;
+    }
+
     if (event.key === 'Enter') {
       const [commandName, ...args] = command.split(' ');
+      const path = displayPath($cwd);
 
       if (import.meta.env.VITE_TRACKING_ENABLED === 'true') {
         track(commandName, ...args);
@@ -42,12 +71,12 @@
         const output = await commandFunction(args);
 
         if (commandName !== 'clear') {
-          $history = [...$history, { command, outputs: [output] }];
+          $history = [...$history, { command, outputs: [output], path }];
         }
       } else {
         const output = `${commandName}: command not found`;
 
-        $history = [...$history, { command, outputs: [output] }];
+        $history = [...$history, { command, outputs: [output], path }];
       }
 
       command = '';
@@ -71,12 +100,22 @@
     } else if (event.key === 'Tab') {
       event.preventDefault();
 
-      const autoCompleteCommand = Object.keys(commands).find((cmd) =>
-        cmd.startsWith(command),
-      );
+      if (command.includes(' ')) {
+        const tokens = command.split(' ');
+        const completed = completePath(tokens[tokens.length - 1], $cwd);
 
-      if (autoCompleteCommand) {
-        command = autoCompleteCommand;
+        if (completed !== null) {
+          tokens[tokens.length - 1] = completed;
+          command = tokens.join(' ');
+        }
+      } else {
+        const autoCompleteCommand = Object.keys(commands).find((cmd) =>
+          cmd.startsWith(command),
+        );
+
+        if (autoCompleteCommand) {
+          command = autoCompleteCommand;
+        }
       }
     } else if (event.ctrlKey && event.key === 'l') {
       event.preventDefault();
