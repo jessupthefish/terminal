@@ -492,6 +492,8 @@ Current: ${get(crt) ? get(crtStyle) : 'off'}`;
 ███████║   ██║   ███████╗ ╚████╔╝ ███████╗██║ ╚████║
 ╚══════╝   ╚═╝   ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝ v${packageJson.version}
 
+Software Developer
+
 Type 'help' to see list of available commands.
 `,
 };
