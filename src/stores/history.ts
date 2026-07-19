@@ -1,10 +1,7 @@
 import { writable } from 'svelte/store';
 import type { Command } from '../interfaces/command';
 
-export const history = writable<Array<Command>>(
-  JSON.parse(localStorage.getItem('history') || '[]'),
-);
+// scrollback is session-only: every visit boots fresh like a real machine
+localStorage.removeItem('history');
 
-history.subscribe((value) => {
-  localStorage.setItem('history', JSON.stringify(value));
-});
+export const history = writable<Array<Command>>([]);
