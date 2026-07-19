@@ -28,6 +28,17 @@
     input.focus();
 
     if ($history.length === 0) {
+      const m = machines[$machine];
+
+      if (m?.screen) {
+        // classic machines power on straight to their boot screen
+        $history = [
+          { command: '', outputs: m.ready ? [m.boot, m.ready] : [m.boot] },
+        ];
+
+        return;
+      }
+
       const banner = (commands['banner'] as () => string)();
       const bootIndex = $history.length;
 
