@@ -7,11 +7,59 @@ import { history } from '../stores/history';
 import { theme } from '../stores/theme';
 import { getNode, listNames, resolvePath } from './filesystem';
 import { fetchRepos, formatRepoTable } from './github';
+import { escapeHtml } from './html';
 import { overlay } from '../stores/overlay';
 
 const hostname = window.location.hostname;
+const loadedAt = Date.now();
 
 const hiddenCommands = ['snake', 'matrix', 'sudo'];
+
+interface HelpEntry {
+  usage: string;
+  description: string;
+}
+
+const helpSections: Array<{ title: string; entries: HelpEntry[] }> = [
+  {
+    title: 'steven',
+    entries: [
+      { usage: 'about', description: 'who I am' },
+      { usage: 'resume', description: 'view my resume' },
+      { usage: 'projects', description: 'my GitHub repos, fetched live' },
+      { usage: 'email', description: 'get in touch' },
+    ],
+  },
+  {
+    title: 'files',
+    entries: [
+      { usage: 'ls [-a] [dir]', description: 'list directory contents' },
+      { usage: 'cd [dir]', description: 'change directory' },
+      { usage: 'cat <file>', description: 'print file contents' },
+      { usage: 'pwd', description: 'print working directory' },
+    ],
+  },
+  {
+    title: 'terminal',
+    entries: [
+      { usage: 'theme ls|set <name>', description: 'change the color scheme' },
+      { usage: 'crt on|off', description: 'toggle CRT effects' },
+      { usage: 'neofetch', description: 'system information' },
+      { usage: 'history', description: 'show command history' },
+      { usage: 'clear', description: 'clear the screen (or Ctrl+L)' },
+      { usage: 'banner', description: 'print the banner' },
+    ],
+  },
+  {
+    title: 'misc',
+    entries: [
+      { usage: 'weather <city>', description: 'current weather' },
+      { usage: 'cowsay [text]', description: 'a cow says things' },
+      { usage: 'fortune', description: 'words of wisdom' },
+      { usage: 'echo, date, whoami, ...', description: 'the usual suspects' },
+    ],
+  },
+];
 
 const fortunes = [
   'There are only two hard things in computer science: cache invalidation, naming things, and off-by-one errors.',
@@ -25,11 +73,108 @@ const fortunes = [
 ];
 
 export const commands: Record<string, (args: string[]) => Promise<string> | string> = {
-  help: () =>
-    'Available commands: ' +
-    Object.keys(commands)
-      .filter((c) => !hiddenCommands.includes(c))
-      .join(', '),
+  help: (args: string[]) => {
+    if (args.length > 0) {
+      return commands['man'](args);
+    }
+
+    const t = get(theme);
+    const usageWidth = Math.max(
+      ...helpSections.flatMap((s) => s.entries.map((e) => e.usage.length)),
+    );
+
+    const sections = helpSections.map(
+      ({ title, entries }) =>
+        `<span style="color: ${t.yellow}">${title}</span>\n` +
+        entries
+          .map(
+            (e) => `  ${escapeHtml(e.usage.padEnd(usageWidth + 3))}${e.description}`,
+          )
+          .join('\n'),
+    );
+
+    return (
+      sections.join('\n\n') +
+      `\n\n<span style="color: ${t.brightBlack}">This isn't everything. Curious people find more.</span>`
+    );
+  },
+  man: (args: string[]) => {
+    if (args.length === 0) {
+      return 'What manual page do you want?\nFor example, try: man cowsay';
+    }
+
+    const name = args[0];
+
+    for (const section of helpSections) {
+      const entry = section.entries.find((e) => e.usage.split(' ')[0] === name);
+
+      if (entry) {
+        return `${escapeHtml(entry.usage)} — ${entry.description}`;
+      }
+    }
+
+    if (commands[name]) {
+      return `${name} — no manual entry, but it does exist. Try it.`;
+    }
+
+    return `No manual entry for ${escapeHtml(name)}`;
+  },
+  history: () => {
+    const entries = get(history)
+      .map((h) => h.command)
+      .filter((c) => c !== '');
+
+    if (entries.length === 0) {
+      return 'history: empty';
+    }
+
+    return entries
+      .map((c, i) => `  ${String(i + 1).padStart(3)}  ${escapeHtml(c)}`)
+      .join('\n');
+  },
+  neofetch: () => {
+    const t = get(theme);
+    const uptimeSeconds = Math.floor((Date.now() - loadedAt) / 1000);
+    const uptime =
+      uptimeSeconds >= 60
+        ? `${Math.floor(uptimeSeconds / 60)}m ${uptimeSeconds % 60}s`
+        : `${uptimeSeconds}s`;
+
+    // rendered width of every line is 16 (&lt;/&gt; display as one char)
+    const art = [
+      '                ',
+      '       o        ',
+      '     o   O      ',
+      '   &gt;&lt;(((("&gt;     ',
+      '     ~  ~       ',
+      '  ~~~~~~~~~~~   ',
+      '                ',
+      '                ',
+      '                ',
+      '                ',
+    ];
+
+    const label = (text: string) => `<span style="color: ${t.yellow}">${text}</span>`;
+
+    const swatch = [t.red, t.green, t.yellow, t.blue, t.purple, t.cyan, t.white]
+      .map((color) => `<span style="color: ${color}">███</span>`)
+      .join('');
+
+    const info = [
+      `<span style="color: ${t.yellow}">guest</span>@<span style="color: ${t.green}">${hostname}</span>`,
+      '-'.repeat(`guest@${hostname}`.length),
+      `${label('OS:')}         StevenOS ${packageJson.version} (Gruvbox edition)`,
+      `${label('Host:')}       ${hostname}`,
+      `${label('Shell:')}      jsh ${packageJson.version}`,
+      `${label('Uptime:')}     ${uptime}`,
+      `${label('Theme:')}      ${t.name}`,
+      `${label('CRT:')}        ${get(crt) ? 'on' : 'off'}`,
+      `${label('Resolution:')} ${window.innerWidth}x${window.innerHeight}`,
+      swatch,
+    ];
+
+    return info.map((line, i) => `${art[i] ?? art[0]}${line}`).join('\n');
+  },
   hostname: () => hostname,
   whoami: () => "guest (if you were root, you'd know it)",
   about: () =>
@@ -51,11 +196,11 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
     const node = getNode(resolvePath(target, get(cwd)));
 
     if (!node) {
-      return `ls: ${target}: No such file or directory`;
+      return `ls: ${escapeHtml(target)}: No such file or directory`;
     }
 
     if (node.type === 'file') {
-      return target;
+      return escapeHtml(target);
     }
 
     return listNames(node, all).join('  ');
@@ -66,11 +211,11 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
     const node = getNode(path);
 
     if (!node) {
-      return `cd: ${target}: No such file or directory`;
+      return `cd: ${escapeHtml(target)}: No such file or directory`;
     }
 
     if (node.type !== 'dir') {
-      return `cd: ${target}: Not a directory`;
+      return `cd: ${escapeHtml(target)}: Not a directory`;
     }
 
     cwd.set(path);
@@ -88,11 +233,11 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
         const node = getNode(resolvePath(arg, get(cwd)));
 
         if (!node) {
-          return `cat: ${arg}: No such file or directory`;
+          return `cat: ${escapeHtml(arg)}: No such file or directory`;
         }
 
         if (node.type === 'dir') {
-          return `cat: ${arg}: Is a directory`;
+          return `cat: ${escapeHtml(arg)}: Is a directory`;
         }
 
         return node.content();
@@ -103,11 +248,11 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
   vi: () => `why use vi? try 'emacs'`,
   vim: () => `why use vim? try 'emacs'`,
   emacs: () => `why use emacs? try 'vim'`,
-  echo: (args: string[]) => args.join(' '),
+  echo: (args: string[]) => escapeHtml(args.join(' ')),
   sudo: (args: string[]) => {
     window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
-    return `Permission denied: unable to run the command '${args[0]}' as root.`;
+    return `Permission denied: unable to run the command '${escapeHtml(args[0] ?? '')}' as root.`;
   },
   theme: (args: string[]) => {
     const usage = `Usage: theme [args].
@@ -191,7 +336,7 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
 
     const weather = await fetch(`https://wttr.in/${city}?ATm`);
 
-    return weather.text();
+    return escapeHtml(await weather.text());
   },
   exit: () => {
     return 'Please close the tab to exit.';
@@ -207,8 +352,8 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
     return 'Wake up, Neo...';
   },
   cowsay: (args: string[]) => {
-    const text = args.join(' ') || 'moo';
-    const border = '-'.repeat(text.length + 2);
+    const text = escapeHtml(args.join(' ') || 'moo');
+    const border = '-'.repeat((args.join(' ') || 'moo').length + 2);
 
     return ` ${'_'.repeat(text.length + 2)}
 < ${text} >
@@ -231,9 +376,9 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
       const response = await fetch(url);
       const data = await response.text();
 
-      return data;
+      return escapeHtml(data);
     } catch (error) {
-      return `curl: could not fetch URL ${url}. Details: ${error}`;
+      return `curl: could not fetch URL ${escapeHtml(url)}. Details: ${escapeHtml(String(error))}`;
     }
   },
   banner: () => `
