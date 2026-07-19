@@ -4,7 +4,9 @@ import themes from '../../themes.json';
 import { crt } from '../stores/crt';
 import { cwd } from '../stores/cwd';
 import { history } from '../stores/history';
+import { machine } from '../stores/machine';
 import { theme } from '../stores/theme';
+import { machines } from './machines';
 import { getNode, listNames, resolvePath } from './filesystem';
 import { fetchRepos, formatRepoTable } from './github';
 import { escapeHtml } from './html';
@@ -43,6 +45,7 @@ const helpSections: Array<{ title: string; entries: HelpEntry[] }> = [
     title: 'terminal',
     entries: [
       { usage: 'theme ls|set <name>', description: 'change the color scheme' },
+      { usage: 'machine ls|set <name>', description: 'emulate a classic computer' },
       { usage: 'crt on|off', description: 'toggle CRT effects' },
       { usage: 'neofetch', description: 'system information' },
       { usage: 'history', description: 'show command history' },
@@ -163,7 +166,9 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
     const info = [
       `<span style="color: ${t.yellow}">guest</span>@<span style="color: ${t.green}">${hostname}</span>`,
       '-'.repeat(`guest@${hostname}`.length),
-      `${label('OS:')}         StevenOS ${packageJson.version} (Gruvbox edition)`,
+      `${label('OS:')}         StevenOS ${packageJson.version} (${
+        get(machine) === 'modern' ? 'Gruvbox' : machines[get(machine)].label
+      } edition)`,
       `${label('Host:')}       ${hostname}`,
       `${label('Shell:')}      jsh ${packageJson.version}`,
       `${label('Uptime:')}     ${uptime}`,
@@ -285,10 +290,11 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
         const t = themes.find((t) => t.name.toLowerCase() === selectedTheme);
 
         if (!t) {
-          return `Theme '${selectedTheme}' not found. Try 'theme ls' to see all available themes.`;
+          return `Theme '${escapeHtml(selectedTheme)}' not found. Try 'theme ls' to see all available themes.`;
         }
 
         theme.set(t);
+        machine.set('modern');
 
         return `Theme set to ${selectedTheme}`;
       }
@@ -302,6 +308,43 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
     window.open(packageJson.repository.url, '_blank');
 
     return 'Opening repository...';
+  },
+  machine: (args: string[]) => {
+    const usage = `Usage: machine [args].
+    [args]:
+      ls: list available machines
+      set: switch to [machine]
+
+    [Examples]:
+      machine ls
+      machine set c64`;
+
+    switch (args[0]) {
+      case 'ls': {
+        const width = Math.max(...Object.keys(machines).map((k) => k.length));
+
+        return Object.values(machines)
+          .map((m) => `  ${m.key.padEnd(width + 3)}${m.label}`)
+          .join('\n');
+      }
+
+      case 'set': {
+        const selected = machines[args[1]];
+
+        if (!selected) {
+          return `Machine '${escapeHtml(args[1] ?? '')}' not found. Try 'machine ls'.`;
+        }
+
+        machine.set(selected.key);
+        theme.set(selected.theme);
+
+        return selected.boot;
+      }
+
+      default: {
+        return usage;
+      }
+    }
   },
   crt: (args: string[]) => {
     switch (args[0]) {
