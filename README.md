@@ -31,4 +31,6 @@ The `machine` command's classic-computer modes use these fonts (see `public/font
 - **Pet Me 64** (Commodore 64) and **Print Char 21** (Apple II) by [Kreative Korp](https://www.kreativekorp.com/software/fonts/), Kreative Software Relay Fonts Free Use License (`LICENSE-KreativeKorp.txt`).
 - **Web437 IBM VGA 8x16** (MS-DOS) from [The Ultimate Oldschool PC Font Pack](https://int10h.org/oldschool-pc-fonts/) by VileR, CC BY-SA 4.0 (`LICENSE-Oldschool-PC-Fonts.txt`).
 - **Glass TTY VT220** (amber terminal) by [Viacheslav Slavinsky](https://github.com/svofski/glasstty), free.
-- **Cascadia Code** (modern mode) by Microsoft, SIL OFL.
+- **Cascadia Code** (linux mode) by Microsoft, SIL OFL.
+
+The `phosphor`, `sony`, and `tv` CRT styles use overlay textures from a community RetroArch overlay pack (`public/overlays/`).

@@ -1,6 +1,14 @@
 import { writable } from 'svelte/store';
 
-export const crtStyles = ['classic', 'fine', 'aperture', 'soft'] as const;
+export const crtStyles = [
+  'classic',
+  'fine',
+  'aperture',
+  'soft',
+  'phosphor',
+  'sony',
+  'tv',
+] as const;
 
 export const crt = writable<boolean>(
   JSON.parse(localStorage.getItem('crt') || 'true'),
