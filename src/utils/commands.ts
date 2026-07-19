@@ -7,7 +7,7 @@ import { history } from '../stores/history';
 import { machine } from '../stores/machine';
 import { theme } from '../stores/theme';
 import { machines } from './machines';
-import { getNode, listNames, resolvePath } from './filesystem';
+import { getNode, HOME, listNames, resolvePath } from './filesystem';
 import { fetchRepos, formatRepoTable } from './github';
 import { escapeHtml } from './html';
 import { overlay } from '../stores/overlay';
@@ -357,8 +357,28 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
 
         machine.set(selected.key);
         theme.set(selected.theme);
+        cwd.set(HOME);
 
-        return selected.boot;
+        // power-on fresh: wipe the screen right after this command's
+        // history entry lands, leaving only the machine's boot screen
+        setTimeout(() => {
+          if (selected.key === 'modern') {
+            history.set([
+              { command: 'banner', outputs: [commands['banner']([]) as string] },
+            ]);
+          } else {
+            history.set([
+              {
+                command: '',
+                outputs: selected.ready
+                  ? [selected.boot, selected.ready]
+                  : [selected.boot],
+              },
+            ]);
+          }
+        }, 0);
+
+        return '';
       }
 
       default: {
