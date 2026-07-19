@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount, tick } from 'svelte';
   import Ps1 from './components/Ps1.svelte';
   import Input from './components/Input.svelte';
   import History from './components/History.svelte';
@@ -8,6 +9,42 @@
   import { crt } from './stores/crt';
   import { machine } from './stores/machine';
   import { overlay } from './stores/overlay';
+  import { machines } from './utils/machines';
+
+  let screenEl: HTMLElement | undefined;
+  let scale = 1;
+
+  $: screenDef = machines[$machine]?.screen;
+
+  async function fit() {
+    if (!screenDef || !screenEl) {
+      scale = 1;
+
+      return;
+    }
+
+    await tick();
+
+    const bezel = screenEl.parentElement;
+
+    if (!bezel) {
+      return;
+    }
+
+    scale = Math.min(
+      (bezel.clientWidth * 0.95) / screenEl.offsetWidth,
+      (bezel.clientHeight * 0.95) / screenEl.offsetHeight,
+    );
+  }
+
+  $: screenDef, screenEl, fit();
+
+  onMount(() => {
+    document.fonts.ready.then(fit);
+    document.fonts.addEventListener('loadingdone', fit);
+
+    return () => document.fonts.removeEventListener('loadingdone', fit);
+  });
 </script>
 
 <svelte:head>
@@ -21,19 +58,42 @@
   {/if}
 </svelte:head>
 
-<main
-  class="h-full border-2 rounded-md p-4 overflow-auto text-xs sm:text-sm md:text-base machine-{$machine}"
-  class:crt={$crt}
-  style={`background-color: ${$theme.background}; color: ${$theme.foreground}; border-color: ${$theme.yellow};`}
->
-  <History />
+<svelte:window on:resize={fit} />
 
-  <div class="flex flex-col md:flex-row">
-    <Ps1 />
+{#if screenDef}
+  <div class="bezel">
+    <main
+      bind:this={screenEl}
+      class="machine-screen machine-{$machine}"
+      class:crt={$crt}
+      style={`width: ${screenDef.cols}ch; height: ${screenDef.rows * screenDef.fontSize}px; font-size: ${screenDef.fontSize}px; border: ${screenDef.border ?? 0}px solid ${$theme.yellow}; transform: scale(${scale}); background-color: ${$theme.background}; color: ${$theme.foreground};`}
+    >
+      <div class="screen-content">
+        <History />
 
-    <Input />
+        <div class="flex flex-col md:flex-row">
+          <Ps1 />
+
+          <Input />
+        </div>
+      </div>
+    </main>
   </div>
-</main>
+{:else}
+  <main
+    class="h-full border-2 rounded-md p-4 overflow-auto text-xs sm:text-sm md:text-base machine-{$machine}"
+    class:crt={$crt}
+    style={`background-color: ${$theme.background}; color: ${$theme.foreground}; border-color: ${$theme.yellow};`}
+  >
+    <History />
+
+    <div class="flex flex-col md:flex-row">
+      <Ps1 />
+
+      <Input />
+    </div>
+  </main>
+{/if}
 
 {#if $overlay === 'snake'}
   <Snake />

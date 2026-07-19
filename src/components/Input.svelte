@@ -52,7 +52,10 @@
   });
 
   afterUpdate(() => {
-    input.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    // fixed machine screens don't scroll; modern jumps like a real terminal
+    if (!machines[$machine]?.screen) {
+      input.scrollIntoView({ behavior: 'auto', block: 'end' });
+    }
   });
 
   const handleKeyDown = async (event: KeyboardEvent) => {

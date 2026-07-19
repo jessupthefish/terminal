@@ -14,6 +14,13 @@ export interface Machine {
   ready?: string;
   /** era-native command aliases, shown by `machine ls` */
   aliases?: string;
+  /** fixed character grid; undefined = modern full-window layout */
+  screen?: {
+    cols: number;
+    rows: number;
+    fontSize: number;
+    border?: number;
+  };
 }
 
 // classic machines were monochrome: every ansi slot maps to the phosphor color
@@ -64,12 +71,14 @@ export const machines: Record<string, Machine> = {
     boot: `
     **** COMMODORE 64 BASIC V2 ****
 
- 64K RAM SYSTEM  38911 BASIC BYTES FREE`,
+ 64K RAM SYSTEM  38911 BASIC BYTES FREE
+`,
     cursor: '█',
     notFound: syntaxError,
     prompt: '',
     ready: 'READY.',
     aliases: 'list',
+    screen: { cols: 40, rows: 25, fontSize: 8, border: 16 },
   },
   apple2: {
     key: 'apple2',
@@ -82,6 +91,7 @@ DISK II SLOT 6 DRIVE 1`,
     notFound: syntaxError,
     prompt: ']',
     aliases: 'catalog',
+    screen: { cols: 40, rows: 24, fontSize: 8 },
   },
   msdos: {
     key: 'msdos',
@@ -94,6 +104,7 @@ HIMEM is testing extended memory... done.`,
     notFound: () => 'Bad command or file name',
     prompt: 'dos-path',
     aliases: 'dir, cls',
+    screen: { cols: 80, rows: 25, fontSize: 16 },
   },
   amber: {
     key: 'amber',
@@ -103,6 +114,7 @@ HIMEM is testing extended memory... done.`,
 NO CARRIER DETECTED. TYPE AWAY ANYWAY.`,
     cursor: '█',
     notFound: notFoundDefault,
+    screen: { cols: 80, rows: 24, fontSize: 20 },
   },
 };
 
