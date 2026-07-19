@@ -248,6 +248,29 @@
 
 /* soft: just the vignette and glow, no line pattern */
 
+/* texture styles from a RetroArch-style overlay pack (public/overlays/) */
+
+.crt-style-phosphor {
+  background-image: url('/overlays/phosphor.png');
+  background-repeat: repeat;
+}
+
+.crt-style-sony {
+  background-image: url('/overlays/sony.png');
+  background-repeat: repeat;
+  opacity: 0.7;
+}
+
+.crt-style-tv {
+  background-image: url('/overlays/tv.png');
+  background-size: 100% 100%;
+}
+
+.crt-style-tv::before {
+  /* frame and vignette are baked into the texture */
+  display: none;
+}
+
 @keyframes crt-flicker {
   0%, 100% { opacity: 1; }
   92% { opacity: 1; }
