@@ -176,6 +176,15 @@
   z-index: 50;
 }
 
+.crt-toast {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 70;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid;
+}
+
 .crt-overlay::before {
   /* vignette, common to all styles */
   content: '';
@@ -188,87 +197,64 @@
   );
 }
 
-/* classic: chunky scanlines + slow refresh sweep */
-.crt-style-classic {
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0px,
-    transparent 2px,
-    rgba(0, 0, 0, 0.18) 3px,
-    transparent 4px
-  );
+/* overlay textures from the RetroArch-style pack (public/overlays/) */
+
+/* seamless patterns tile at native pixel density */
+.crt-style-phosphor,
+.crt-style-sony,
+.crt-style-scanlines,
+.crt-style-grid {
+  background-repeat: repeat;
 }
 
-.crt-style-classic::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 8rem;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(255, 255, 255, 0.03),
-    transparent
-  );
-  animation: crt-sweep 8s linear infinite;
+/* framed textures (vignette/bezel baked in) stretch to the viewport */
+.crt-style-tv,
+.crt-style-mask,
+.crt-style-checker,
+.crt-style-rgb {
+  background-size: 100% 100%;
 }
 
-/* fine: tight subtle scanlines, no sweep */
-.crt-style-fine {
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.22) 0px,
-    rgba(0, 0, 0, 0.22) 1px,
-    transparent 1px,
-    transparent 3px
-  );
+.crt-style-tv::before,
+.crt-style-mask::before,
+.crt-style-checker::before,
+.crt-style-rgb::before {
+  display: none;
 }
-
-/* aperture: RGB aperture-grille stripes + faint scanlines */
-.crt-style-aperture {
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 3px,
-      rgba(0, 0, 0, 0.14) 3px,
-      rgba(0, 0, 0, 0.14) 4px
-    ),
-    repeating-linear-gradient(
-      to right,
-      rgba(255, 0, 0, 0.05) 0px,
-      rgba(255, 0, 0, 0.05) 1px,
-      rgba(0, 255, 0, 0.05) 1px,
-      rgba(0, 255, 0, 0.05) 2px,
-      rgba(0, 0, 255, 0.05) 2px,
-      rgba(0, 0, 255, 0.05) 3px
-    );
-}
-
-/* soft: just the vignette and glow, no line pattern */
-
-/* texture styles from a RetroArch-style overlay pack (public/overlays/) */
 
 .crt-style-phosphor {
   background-image: url('/overlays/phosphor.png');
-  background-repeat: repeat;
 }
 
 .crt-style-sony {
   background-image: url('/overlays/sony.png');
-  background-repeat: repeat;
   opacity: 0.7;
 }
 
 .crt-style-tv {
   background-image: url('/overlays/tv.png');
-  background-size: 100% 100%;
 }
 
-.crt-style-tv::before {
-  /* frame and vignette are baked into the texture */
-  display: none;
+.crt-style-mask {
+  background-image: url('/overlays/mask.png');
+}
+
+.crt-style-checker {
+  background-image: url('/overlays/checker.png');
+}
+
+.crt-style-rgb {
+  background-image: url('/overlays/rgb.png');
+}
+
+.crt-style-scanlines {
+  background-image: url('/overlays/scanlines.png');
+  opacity: 0.35;
+}
+
+.crt-style-grid {
+  background-image: url('/overlays/grid.png');
+  opacity: 0.5;
 }
 
 @keyframes crt-flicker {
@@ -279,14 +265,8 @@
   97% { opacity: 0.98; }
 }
 
-@keyframes crt-sweep {
-  from { top: -8rem; }
-  to { top: 100%; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .crt,
-  .crt-style-classic::after,
   .terminal-cursor {
     animation: none;
   }

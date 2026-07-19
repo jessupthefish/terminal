@@ -416,6 +416,7 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
       }
       default:
         return `Usage: crt [on|off|next|style <${crtStyles.join('|')}>]
+Tip: Ctrl+Left/Right flips through styles.
 Current: ${get(crt) ? get(crtStyle) : 'off'}`;
     }
   },

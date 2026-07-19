@@ -7,6 +7,22 @@
   import Matrix from './components/Matrix.svelte';
   import { theme } from './stores/theme';
   import { crt, crtStyle } from './stores/crt';
+
+  let styleToast = '';
+  let toastTimer: ReturnType<typeof setTimeout>;
+  let firstStyleValue = true;
+
+  crtStyle.subscribe((style) => {
+    if (firstStyleValue) {
+      firstStyleValue = false;
+
+      return;
+    }
+
+    styleToast = style;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => (styleToast = ''), 1500);
+  });
   import { machine } from './stores/machine';
   import { overlay } from './stores/overlay';
   import { machines } from './utils/machines';
@@ -103,4 +119,13 @@
 
 {#if $crt}
   <div class="crt-overlay crt-style-{$crtStyle}" aria-hidden="true"></div>
+{/if}
+
+{#if styleToast}
+  <div
+    class="crt-toast"
+    style={`background-color: ${$theme.background}; color: ${$theme.foreground}; border-color: ${$theme.yellow};`}
+  >
+    crt: {styleToast}
+  </div>
 {/if}
