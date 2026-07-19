@@ -492,6 +492,6 @@ Current: ${get(crt) ? get(crtStyle) : 'off'}`;
 ███████║   ██║   ███████╗ ╚████╔╝ ███████╗██║ ╚████║
 ╚══════╝   ╚═╝   ╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝ v${packageJson.version}
 
-Steven Jessup, developer & veteran. Type 'help' to look around.
+Type 'help' to see list of available commands.
 `,
 };
