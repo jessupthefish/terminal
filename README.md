@@ -22,7 +22,8 @@ npm run preview  # serve the production build locally
 
 ## Deploy
 
-`npm run build`, then upload the contents of `dist/` to the web host.
+- **stevenjessup.com (SiteGround):** `./deploy.sh` — builds and rsyncs `dist/` to the server over SSH (needs the `siteground` alias in `~/.ssh/config`, key auth).
+- **GitHub Pages mirror:** every push to `main` auto-deploys to [jessupthefish.github.io/terminal](https://jessupthefish.github.io/terminal/) via Actions.
 
 ## Font credits
 
