@@ -160,7 +160,6 @@
 
 .crt {
   text-shadow: 0 0 4px;
-  animation: crt-flicker 4s infinite;
 }
 
 /* the browser UA stylesheet resets text-shadow on form controls,
@@ -257,16 +256,7 @@
   opacity: 0.5;
 }
 
-@keyframes crt-flicker {
-  0%, 100% { opacity: 1; }
-  92% { opacity: 1; }
-  93% { opacity: 0.96; }
-  94% { opacity: 1; }
-  97% { opacity: 0.98; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .crt,
   .terminal-cursor {
     animation: none;
   }
