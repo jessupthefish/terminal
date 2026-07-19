@@ -56,9 +56,9 @@ const notFoundDefault = (cmd: string) => `${cmd}: command not found`;
 const syntaxError = () => '?SYNTAX  ERROR';
 
 export const machines: Record<string, Machine> = {
-  modern: {
-    key: 'modern',
-    label: 'this century (Gruvbox)',
+  linux: {
+    key: 'linux',
+    label: 'Linux (Gruvbox)',
     theme: themes.find((t) => t.name === 'GruvboxDark') as Theme,
     boot: 'Welcome back to the future.',
     cursor: '█',

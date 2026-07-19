@@ -30,7 +30,6 @@ function populateFilesystem(repos: Repo[]) {
         [
           `<a href="${repo.url}" target="_blank">${escapeHtml(repo.name)}</a>`,
           `language:  ${escapeHtml(repo.language ?? 'n/a')}`,
-          `stars:     ${repo.stars}`,
           `updated:   ${new Date(repo.pushed).toLocaleDateString()}`,
           '',
           escapeHtml(repo.description ?? 'No description.'),
@@ -90,9 +89,8 @@ export function formatRepoTable(repos: Repo[]): string {
   const rows = repos.map((repo) => {
     const namePad = ' '.repeat(nameWidth - repo.name.length + 2);
     const lang = (repo.language ?? 'n/a').padEnd(langWidth + 2);
-    const stars = String(repo.stars).padStart(3);
 
-    return `<a href="${repo.url}" target="_blank">${escapeHtml(repo.name)}</a>${namePad}${escapeHtml(lang)}${stars}★  ${escapeHtml(repo.description ?? '')}`;
+    return `<a href="${repo.url}" target="_blank">${escapeHtml(repo.name)}</a>${namePad}${escapeHtml(lang)}${escapeHtml(repo.description ?? '')}`;
   });
 
   return [

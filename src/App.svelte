@@ -6,7 +6,7 @@
   import Snake from './components/Snake.svelte';
   import Matrix from './components/Matrix.svelte';
   import { theme } from './stores/theme';
-  import { crt } from './stores/crt';
+  import { crt, crtStyle } from './stores/crt';
   import { machine } from './stores/machine';
   import { overlay } from './stores/overlay';
   import { machines } from './utils/machines';
@@ -102,5 +102,5 @@
 {/if}
 
 {#if $crt}
-  <div class="crt-overlay" aria-hidden="true"></div>
+  <div class="crt-overlay crt-style-{$crtStyle}" aria-hidden="true"></div>
 {/if}
