@@ -40,6 +40,12 @@
   animation: crt-flicker 4s infinite;
 }
 
+/* the browser UA stylesheet resets text-shadow on form controls,
+   so the command input loses the glow unless re-inherited */
+.crt input {
+  text-shadow: inherit;
+}
+
 .crt-overlay {
   pointer-events: none;
   position: fixed;
