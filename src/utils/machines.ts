@@ -12,6 +12,8 @@ export interface Machine {
   prompt?: string;
   /** printed after every command's output (C64's READY.) */
   ready?: string;
+  /** era-native command aliases, shown by `machine ls` */
+  aliases?: string;
 }
 
 // classic machines were monochrome: every ansi slot maps to the phosphor color
@@ -67,6 +69,7 @@ export const machines: Record<string, Machine> = {
     notFound: syntaxError,
     prompt: '',
     ready: 'READY.',
+    aliases: 'list',
   },
   apple2: {
     key: 'apple2',
@@ -78,6 +81,7 @@ DISK II SLOT 6 DRIVE 1`,
     cursor: '█',
     notFound: syntaxError,
     prompt: ']',
+    aliases: 'catalog',
   },
   msdos: {
     key: 'msdos',
@@ -89,6 +93,7 @@ HIMEM is testing extended memory... done.`,
     cursor: '_',
     notFound: () => 'Bad command or file name',
     prompt: 'dos-path',
+    aliases: 'dir, cls',
   },
   amber: {
     key: 'amber',
