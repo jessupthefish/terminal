@@ -174,18 +174,10 @@
   position: fixed;
   inset: 0;
   z-index: 50;
-  /* scanlines */
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0px,
-    transparent 2px,
-    rgba(0, 0, 0, 0.18) 3px,
-    transparent 4px
-  );
 }
 
 .crt-overlay::before {
-  /* vignette */
+  /* vignette, common to all styles */
   content: '';
   position: absolute;
   inset: 0;
@@ -196,8 +188,18 @@
   );
 }
 
-.crt-overlay::after {
-  /* slow-moving refresh band */
+/* classic: chunky scanlines + slow refresh sweep */
+.crt-style-classic {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.18) 3px,
+    transparent 4px
+  );
+}
+
+.crt-style-classic::after {
   content: '';
   position: absolute;
   left: 0;
@@ -211,6 +213,40 @@
   );
   animation: crt-sweep 8s linear infinite;
 }
+
+/* fine: tight subtle scanlines, no sweep */
+.crt-style-fine {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.22) 0px,
+    rgba(0, 0, 0, 0.22) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* aperture: RGB aperture-grille stripes + faint scanlines */
+.crt-style-aperture {
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0, 0, 0, 0.14) 3px,
+      rgba(0, 0, 0, 0.14) 4px
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(255, 0, 0, 0.05) 0px,
+      rgba(255, 0, 0, 0.05) 1px,
+      rgba(0, 255, 0, 0.05) 1px,
+      rgba(0, 255, 0, 0.05) 2px,
+      rgba(0, 0, 255, 0.05) 2px,
+      rgba(0, 0, 255, 0.05) 3px
+    );
+}
+
+/* soft: just the vignette and glow, no line pattern */
 
 @keyframes crt-flicker {
   0%, 100% { opacity: 1; }
@@ -227,7 +263,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .crt,
-  .crt-overlay::after,
+  .crt-style-classic::after,
   .terminal-cursor {
     animation: none;
   }

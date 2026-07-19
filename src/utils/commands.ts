@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import packageJson from '../../package.json';
 import themes from '../../themes.json';
-import { crt } from '../stores/crt';
+import { crt, crtStyle, crtStyles } from '../stores/crt';
 import { cwd } from '../stores/cwd';
 import { history } from '../stores/history';
 import { machine } from '../stores/machine';
@@ -44,7 +44,7 @@ const helpSections: Array<{ title: string; entries: HelpEntry[] }> = [
     entries: [
       { usage: 'theme ls|set <name>', description: 'change the color scheme' },
       { usage: 'machine ls|set <name>', description: 'emulate a classic computer' },
-      { usage: 'crt on|off', description: 'toggle CRT effects' },
+      { usage: 'crt on|off|next', description: 'CRT effects; next cycles styles' },
       { usage: 'neofetch', description: 'system information' },
       { usage: 'history', description: 'show command history' },
       { usage: 'clear', description: 'clear the screen (or Ctrl+L)' },
@@ -99,10 +99,7 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
           .join('\n'),
     );
 
-    return (
-      sections.join('\n\n') +
-      `\n\n<span style="color: ${t.brightBlack}">This isn't everything. Curious people find more.</span>`
-    );
+    return sections.join('\n\n');
   },
   man: (args: string[]) => {
     if (args.length === 0) {
@@ -170,7 +167,7 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
       `<span style="color: ${t.yellow}">guest</span>@<span style="color: ${t.green}">${hostname}</span>`,
       '-'.repeat(`guest@${hostname}`.length),
       `${label('OS:')}         StevenOS ${packageJson.version} (${
-        get(machine) === 'modern' ? 'Gruvbox' : machines[get(machine)].label
+        get(machine) === 'linux' ? 'Gruvbox' : machines[get(machine)].label
       } edition)`,
       `${label('Host:')}       ${hostname}`,
       `${label('Shell:')}      jsh ${packageJson.version}`,
@@ -306,7 +303,7 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
         }
 
         theme.set(t);
-        machine.set('modern');
+        machine.set('linux');
 
         return `Theme set to ${selectedTheme}`;
       }
@@ -362,7 +359,7 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
         // power-on fresh: wipe the screen right after this command's
         // history entry lands, leaving only the machine's boot screen
         setTimeout(() => {
-          if (selected.key === 'modern') {
+          if (selected.key === 'linux') {
             history.set([
               { command: 'banner', outputs: [commands['banner']([]) as string] },
             ]);
@@ -391,13 +388,35 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
       case 'on':
         crt.set(true);
 
-        return 'CRT effects enabled.';
+        return `CRT effects enabled (style: ${get(crtStyle)}).`;
       case 'off':
         crt.set(false);
 
         return 'CRT effects disabled.';
+      case 'next': {
+        const next =
+          crtStyles[(crtStyles.indexOf(get(crtStyle) as never) + 1) % crtStyles.length];
+
+        crtStyle.set(next);
+        crt.set(true);
+
+        return `CRT style: ${next}`;
+      }
+      case 'style': {
+        const selected = args[1];
+
+        if (!selected || !(crtStyles as readonly string[]).includes(selected)) {
+          return `Usage: crt style <${crtStyles.join('|')}>`;
+        }
+
+        crtStyle.set(selected);
+        crt.set(true);
+
+        return `CRT style: ${selected}`;
+      }
       default:
-        return 'Usage: crt [on|off]';
+        return `Usage: crt [on|off|next|style <${crtStyles.join('|')}>]
+Current: ${get(crt) ? get(crtStyle) : 'off'}`;
     }
   },
   clear: () => {
