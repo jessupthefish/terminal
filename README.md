@@ -1,54 +1,25 @@
-# [M4TT72 | Terminal](https://term.m4tt72.com)
+# stevenjessup.com
 
-A terminal style website
+My interactive terminal-style resume, live at [stevenjessup.com](https://stevenjessup.com).
 
-![screenshot](/docs/screenshot.png)
+Type `help` in the terminal to see what it can do — there are a few things `help` won't tell you.
 
-## IMPORTANT
+## Stack
 
-This is a new version of [m4tt72/terminal](https://github.com/m4tt72/terminal), which is built with [Svelte](https://svelte.dev/).
+- [Svelte 4](https://svelte.dev/) + [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- Based on [m4tt72/terminal](https://github.com/m4tt72/terminal) (MIT), heavily customized.
 
-If you are looking for the old version, please check out the [v2 branch](https://github.com/m4tt72/terminal/tree/v2).
-
-The old version is built with [React](https://reactjs.org/), and it is no longer maintained.
-
-Thanks!
-
-## Quick Start
-
-### Using docker (recommended)
+## Development
 
 ```bash
-docker run -d --name terminal -p 3000:3000 ghcr.io/m4tt72/terminal
+npm install
+npm run dev      # dev server
+npm run check    # type-check (svelte-check)
+npm run build    # production build to dist/
+npm run preview  # serve the production build locally
 ```
 
-### Using npm/yarn
+## Deploy
 
-1. Install dependencies:
-
-```bash
-yarn install
-```
-
-3. Run the server:
-
-```bash
-yarn dev
-```
-
-## Themes
-
-![themes](/docs/screenshot.gif)
-
-[Here's](/docs/themes) a list of available themes.
-
-
-## Contributing
-
-Please feel free to pull requests or log issues.
-
-Thanks!
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=m4tt72/terminal&type=Date)](https://star-history.com/#m4tt72/terminal&Date)
+`npm run build`, then upload the contents of `dist/` to the web host.
