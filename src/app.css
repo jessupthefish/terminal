@@ -37,6 +37,29 @@
   animation: cursor-blink 1.1s steps(1) infinite;
 }
 
+/* classic machine modes — switched with the `machine` command */
+
+.machine-c64,
+.machine-apple2,
+.machine-msdos,
+.machine-amber {
+  border-radius: 0;
+}
+
+.machine-c64 {
+  border-width: 20px;
+  text-transform: uppercase;
+}
+
+.machine-apple2 {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.machine-amber {
+  letter-spacing: 0.04em;
+}
+
 @keyframes cursor-blink {
   50% {
     opacity: 0;
