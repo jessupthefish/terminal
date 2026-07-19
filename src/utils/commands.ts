@@ -84,13 +84,17 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
     const usageWidth = Math.max(
       ...helpSections.flatMap((s) => s.entries.map((e) => e.usage.length)),
     );
+    // 40-column machines get a stacked layout, like real 40-col software
+    const narrow = (machines[get(machine)]?.screen?.cols ?? 80) < 60;
 
     const sections = helpSections.map(
       ({ title, entries }) =>
         `<span style="color: ${t.yellow}">${title}</span>\n` +
         entries
-          .map(
-            (e) => `  ${escapeHtml(e.usage.padEnd(usageWidth + 3))}${e.description}`,
+          .map((e) =>
+            narrow
+              ? `${escapeHtml(e.usage)}\n  ${e.description}`
+              : `  ${escapeHtml(e.usage.padEnd(usageWidth + 3))}${e.description}`,
           )
           .join('\n'),
     );

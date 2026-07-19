@@ -63,11 +63,40 @@
 
 /* classic machine modes — switched with the `machine` command */
 
-.machine-c64,
-.machine-apple2,
-.machine-msdos,
-.machine-amber {
+.bezel {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #101010;
+}
+
+/* fixed character grid: no scrollback, instant line jumps, hard wrap at
+   the column limit. min-height 100% keeps a fresh screen top-anchored;
+   once content exceeds the grid, justify-end clips old lines off the top. */
+.machine-screen {
+  box-sizing: content-box;
+  /* clip, not hidden: hidden creates a scroll container pinned to the top,
+     clip lets justify-end truly anchor the last line to the screen bottom */
+  overflow: clip;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  line-height: 1;
   border-radius: 0;
+}
+
+/* hard-wrap long output at the column limit, mid-word like a real
+   40/80-column display — but never break the prompt itself */
+.machine-screen p {
+  word-break: break-all;
+}
+
+.machine-screen .screen-content {
+  min-height: 100%;
+  /* without this, negative free space shrinks the item to min-height and
+     its content overflows the bottom instead of clipping at the top */
+  flex-shrink: 0;
 }
 
 .machine-c64,
@@ -87,9 +116,6 @@
 }
 
 .machine-c64 {
-  border-width: 28px;
-  font-size: 24px !important;
-  line-height: 1;
   text-transform: uppercase;
 }
 
@@ -99,9 +125,6 @@
 }
 
 .machine-apple2 {
-  border-width: 0;
-  font-size: 24px !important;
-  line-height: 1.1;
   text-transform: uppercase;
 }
 
@@ -110,21 +133,9 @@
   font-family: 'Web437 IBM VGA', monospace;
 }
 
-.machine-msdos {
-  border-width: 0;
-  font-size: 16px !important;
-  line-height: 1;
-}
-
 .machine-amber,
 .machine-amber * {
   font-family: 'Glass TTY VT220', monospace;
-}
-
-.machine-amber {
-  border-width: 0;
-  font-size: 20px !important;
-  line-height: 1.2;
 }
 
 .machine-amber.crt {
