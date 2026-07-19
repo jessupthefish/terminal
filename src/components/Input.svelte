@@ -2,6 +2,8 @@
   import { afterUpdate, onMount } from 'svelte';
   import { cwd } from '../stores/cwd';
   import { history } from '../stores/history';
+  import { machine } from '../stores/machine';
+  import { machines } from '../utils/machines';
   import { overlay } from '../stores/overlay';
   import { theme } from '../stores/theme';
   import { commands } from '../utils/commands';
@@ -71,13 +73,25 @@
       if (commandFunction) {
         const output = await commandFunction(args);
 
-        if (commandName !== 'clear') {
-          $history = [...$history, { command, outputs: [output], path }];
+        if (commandName !== 'clear' && commandName !== 'cls') {
+          const outputs = [output];
+          const ready = machines[$machine]?.ready;
+
+          if (ready) {
+            outputs.push(ready);
+          }
+
+          $history = [...$history, { command, outputs, path }];
         }
       } else {
-        const output = `${escapeHtml(commandName)}: command not found`;
+        const outputs = [machines[$machine].notFound(escapeHtml(commandName))];
+        const ready = machines[$machine]?.ready;
 
-        $history = [...$history, { command, outputs: [output], path }];
+        if (ready) {
+          outputs.push(ready);
+        }
+
+        $history = [...$history, { command, outputs, path }];
       }
 
       command = '';
@@ -164,5 +178,5 @@
   <span
     class="terminal-cursor select-none"
     aria-hidden="true"
-    style={`color: ${$theme.foreground}`}>█</span>
+    style={`color: ${$theme.foreground}`}>{machines[$machine]?.cursor ?? '█'}</span>
 </div>

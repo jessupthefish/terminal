@@ -15,7 +15,7 @@ import { overlay } from '../stores/overlay';
 const hostname = window.location.hostname;
 const loadedAt = Date.now();
 
-const hiddenCommands = ['snake', 'matrix', 'sudo'];
+const hiddenCommands = ['snake', 'matrix', 'sudo', 'dir', 'cls', 'catalog', 'list'];
 
 interface HelpEntry {
   usage: string;
@@ -228,6 +228,15 @@ export const commands: Record<string, (args: string[]) => Promise<string> | stri
     return '';
   },
   pwd: () => get(cwd),
+  // period-correct aliases for the machine modes
+  dir: (args: string[]) => commands['ls'](args),
+  catalog: (args: string[]) => commands['ls'](args),
+  list: (args: string[]) => commands['ls'](args),
+  cls: () => {
+    history.set([]);
+
+    return '';
+  },
   cat: (args: string[]) => {
     if (args.length === 0) {
       return 'Usage: cat [file]';

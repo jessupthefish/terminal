@@ -23,3 +23,12 @@ npm run preview  # serve the production build locally
 ## Deploy
 
 `npm run build`, then upload the contents of `dist/` to the web host.
+
+## Font credits
+
+The `machine` command's classic-computer modes use these fonts (see `public/fonts/`):
+
+- **Pet Me 64** (Commodore 64) and **Print Char 21** (Apple II) by [Kreative Korp](https://www.kreativekorp.com/software/fonts/), Kreative Software Relay Fonts Free Use License (`LICENSE-KreativeKorp.txt`).
+- **Web437 IBM VGA 8x16** (MS-DOS) from [The Ultimate Oldschool PC Font Pack](https://int10h.org/oldschool-pc-fonts/) by VileR, CC BY-SA 4.0 (`LICENSE-Oldschool-PC-Fonts.txt`).
+- **Glass TTY VT220** (amber terminal) by [Viacheslav Slavinsky](https://github.com/svofski/glasstty), free.
+- **Cascadia Code** (modern mode) by Microsoft, SIL OFL.
